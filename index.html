@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6956d9">
+<title>StorySpark Kids</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--purple:#6956d9;--purple-dark:#5140bd;--purple-light:#eeeaff;--background:#f8f7ff;--card:#fff;--text:#25213d;--muted:#77748a;--border:#ebe8f5;--shadow:0 15px 40px rgba(50,40,100,.1)}
+body.dark{--background:#171522;--card:#242132;--text:#f7f5ff;--muted:#aaa5bd;--border:#38334b;--purple-light:#312b4b;--shadow:0 15px 40px rgba(0,0,0,.3)}
+body{font-family:"Trebuchet MS",Arial,sans-serif;background:var(--background);color:var(--text);transition:.3s}
+header{position:sticky;top:0;z-index:1000;height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 6%;background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+body.dark header{background:rgba(23,21,34,.88)}
+.logo{display:flex;align-items:center;gap:12px;cursor:pointer}
+.logo-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;border-radius:17px;background:linear-gradient(135deg,#ffd45c,#ff9fb3);font-size:27px;animation:logoFloat 3s infinite ease-in-out}
+@keyframes logoFloat{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(3deg) translateY(-4px)}}
+.logo-name{font-size:21px;font-weight:900;color:var(--purple)}
+.logo-tagline{font-size:10px;color:var(--muted);margin-top:2px}
+.header-actions{display:flex;gap:10px}
+.icon-button{width:43px;height:43px;border:0;border-radius:50%;background:var(--purple-light);color:var(--purple);font-size:18px;cursor:pointer}
+.container{width:88%;max-width:1250px;margin:auto}
+.hero{margin-top:32px;min-height:315px;border-radius:34px;padding:42px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#5d49ca,#8d78ef);color:#fff;box-shadow:0 25px 50px rgba(91,72,190,.22)}
+.hero-content{max-width:650px;z-index:2}.hero-badge{display:inline-block;padding:7px 13px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:30px;font-size:12px;margin-bottom:15px}
+.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.1;margin-bottom:15px}.hero p{max-width:550px;line-height:1.7;color:#efedff;font-size:15px}
+.hero-button{display:inline-flex;margin-top:23px;padding:13px 20px;border:0;border-radius:14px;background:#fff;color:var(--purple);font-weight:bold;cursor:pointer}
+.hero-character{font-size:125px;z-index:2;animation:characterFloat 4s infinite ease-in-out}
+@keyframes characterFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px) rotate(3deg)}}
+.section-heading{display:flex;justify-content:space-between;align-items:center;margin-top:42px;margin-bottom:18px}.section-heading h2{font-size:25px}.section-heading span{color:var(--purple);font-size:13px}
+.categories{display:grid;grid-template-columns:repeat(6,1fr);gap:13px}.category{padding:17px 10px;background:var(--card);border:2px solid transparent;border-radius:21px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:.25s}.category:hover{transform:translateY(-5px)}.category.active{border-color:var(--purple);background:var(--purple-light)}
+.category-icon{display:block;font-size:32px;margin-bottom:8px}.category-name{font-size:13px;font-weight:bold}
+.story-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.story-card{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border);border-radius:25px;padding:12px;box-shadow:var(--shadow);cursor:pointer;transition:.3s}.story-card:hover{transform:translateY(-8px)}
+.story-image{height:180px;border-radius:19px;display:flex;align-items:center;justify-content:center;font-size:75px;background:linear-gradient(135deg,#fff0c2,#e7deff)}
+.favorite-small{position:absolute;top:20px;right:20px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(255,255,255,.95);font-size:17px;cursor:pointer;z-index:5}
+.story-info{padding:10px 5px 5px}.story-category{font-size:10px;font-weight:bold;color:var(--purple);letter-spacing:.7px}.story-title{font-size:16px;margin-top:5px;line-height:1.3}.story-meta{display:flex;justify-content:space-between;margin-top:9px;color:var(--muted);font-size:11px}
+.empty{display:none;text-align:center;padding:60px;color:var(--muted)}
+.story-player{display:none;position:fixed;inset:0;z-index:5000;background:var(--background);overflow-y:auto}
+.player-header{height:75px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;background:var(--card);border-bottom:1px solid var(--border)}
+.player-title{font-size:17px;font-weight:bold;max-width:60%;text-align:center}.close-button,.player-fav{width:43px;height:43px;border:0;border-radius:50%;background:var(--purple-light);color:var(--purple);font-size:19px;cursor:pointer}
+.player-body{width:90%;max-width:850px;margin:25px auto 50px}.progress{display:flex;gap:5px;margin-bottom:20px}.progress span{height:5px;flex:1;border-radius:20px;background:#ddd9e9}.progress span.active{background:var(--purple)}
+.scene{height:min(55vh,450px);min-height:300px;border-radius:32px;background:linear-gradient(135deg,#fff0c1,#e5dcff);display:flex;align-items:center;justify-content:center;font-size:145px;box-shadow:var(--shadow);animation:sceneIn .4s}
+@keyframes sceneIn{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.subtitle-card{margin-top:18px;background:var(--card);border:1px solid var(--border);border-radius:25px;padding:22px;text-align:center;box-shadow:var(--shadow)}
+.subtitle-label{font-size:10px;font-weight:bold;color:var(--purple);letter-spacing:1.5px}.subtitle{font-size:20px;line-height:1.6;font-weight:bold;margin-top:10px}
+.player-controls{display:flex;gap:10px;margin-top:15px}.player-controls button{height:55px;border:0;border-radius:16px;cursor:pointer;font-weight:bold;font-size:14px}.prev{width:25%;background:var(--card);border:1px solid var(--border)!important;color:var(--text)}.speak{width:25%;background:#fff0c4;color:#8a6812}.next{flex:1;background:var(--purple);color:#fff}
+.moral-screen{display:none;position:fixed;inset:0;z-index:7000;background:radial-gradient(circle at 50% 0,#e9e1ff,var(--background) 55%);align-items:center;justify-content:center;padding:25px;overflow-y:auto}
+.moral-box{width:100%;max-width:570px;text-align:center}.moral-star{width:135px;height:135px;margin:auto;display:flex;align-items:center;justify-content:center;border-radius:43px;background:linear-gradient(135deg,#ffe99b,#ffd45c);font-size:72px;box-shadow:0 20px 40px rgba(255,200,70,.2)}
+.moral-box h1{font-size:32px;margin-top:25px}.completed-story{margin-top:7px;color:var(--muted)}.lesson{background:var(--card);border:1px solid var(--border);border-radius:25px;padding:27px;margin-top:25px;box-shadow:var(--shadow)}.lesson-title{color:var(--purple);font-size:11px;font-weight:bold;letter-spacing:1.5px}.lesson-text{margin-top:13px;font-size:20px;line-height:1.5;font-weight:bold}
+.moral-buttons{display:flex;gap:10px;margin-top:18px}.moral-buttons button{flex:1;height:55px;border:0;border-radius:16px;cursor:pointer;font-weight:bold}.again{background:var(--purple-light);color:var(--purple)}.home{background:var(--purple);color:#fff}
+footer{text-align:center;padding:55px 20px 30px;color:var(--muted);font-size:12px}
+@media(max-width:1050px){.categories{grid-template-columns:repeat(3,1fr)}.story-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:750px){.hero{padding:30px}.hero-character{font-size:90px}.story-grid{grid-template-columns:repeat(2,1fr)}.story-image{height:150px}}
+@media(max-width:500px){header{padding:0 5%}.logo-tagline{display:none}.container{width:92%}.hero{min-height:300px;padding:28px}.hero h1{font-size:31px}.hero-character{display:none}.categories{grid-template-columns:repeat(2,1fr)}.story-grid{grid-template-columns:repeat(2,1fr);gap:12px}.story-image{height:125px;font-size:55px}.story-title{font-size:14px}.scene{min-height:290px;font-size:105px}.subtitle{font-size:17px}.player-controls{flex-wrap:wrap}.prev,.speak{width:calc(50% - 5px)}.next{width:100%;flex:none}}
+button:disabled{opacity:.4;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo" onclick="goTop()">
+<div class="logo-icon">🧸</div>
+<div><div class="logo-name">StorySpark Kids</div><div class="logo-tagline">Little stories • Big lessons ✨</div></div>
+</div>
+<div class="header-actions">
+<button class="icon-button" onclick="toggleDarkMode()">🌙</button>
+<button class="icon-button" onclick="showFavorites()">❤️</button>
+</div>
+</header>
+
+<main class="container" id="home">
+
+<section class="hero">
+<div class="hero-content">
+<span class="hero-badge">✨ Welcome to StorySpark</span>
+<h1>Stories that make little hearts grow.</h1>
+<p>Explore wonderful stories, meet amazing characters and discover a new moral lesson with every story.</p>
+<button class="hero-button" onclick="scrollToStories()">📖 Start Reading</button>
+</div>
+<div class="hero-character">🧸📖</div>
+</section>
+
+<div class="section-heading">
+<h2>Choose a Category</h2>
+<span id="storyCount">10 stories</span>
+</div>
+
+<div class="categories">
+<div class="category active" onclick="filterStories('All',this)"><span class="category-icon">✨</span><span class="category-name">All Stories</span></div>
+<div class="category" onclick="filterStories('Animals',this)"><span class="category-icon">🦁</span><span class="category-name">Animals</span></div>
+<div class="category" onclick="filterStories('Kindness',this)"><span class="category-icon">❤️</span><span class="category-name">Kindness</span></div>
+<div class="category" onclick="filterStories('Friendship',this)"><span class="category-icon">🤝</span><span class="category-name">Friendship</span></div>
+<div class="category" onclick="filterStories('Wisdom',this)"><span class="category-icon">🧠</span><span class="category-name">Wisdom</span></div>
+<div class="category" onclick="filterStories('Nature',this)"><span class="category-icon">🌱</span><span class="category-name">Nature</span></div>
+</div>
+
+<div class="section-heading" id="storiesSection">
+<h2>Discover Stories</h2><span>Choose your adventure</span>
+</div>
+<div class="story-grid" id="storyGrid"></div>
+<div class="empty" id="empty"><div style="font-size:50px">📚</div><p>No stories found.</p></div>
+</main>
+
+<footer><p>© 2026 StorySpark Kids</p><p style="margin-top:6px">Learn • Imagine • Grow 🌟</p></footer>
+
+<section class="story-player" id="storyPlayer">
+<div class="player-header">
+<button class="close-button" onclick="closeStory()">←</button>
+<div class="player-title" id="playerTitle">Story</div>
+<button class="player-fav" id="playerFav" onclick="toggleCurrentFavorite()">♡</button>
+</div>
+<div class="player-body">
+<div class="progress" id="progress"></div>
+<div class="scene" id="scene">🦁</div>
+<div class="subtitle-card">
+<div class="subtitle-label">STORY</div>
+<div class="subtitle" id="subtitle">Story begins...</div>
+</div>
+<div class="player-controls">
+<button class="prev" id="prevButton" onclick="previousSlide()">← Previous</button>
+<button class="speak" onclick="speakStory()">🔊 Listen</button>
+<button class="next" id="nextButton" onclick="nextSlide()">Next →</button>
+</div>
+</div>
+</section>
+
+<section class="moral-screen" id="moralScreen">
+<div class="moral-box">
+<div class="moral-star">🌟</div>
+<h1>Story Complete!</h1>
+<p class="completed-story" id="completedStory"></p>
+<div class="lesson">
+<div class="lesson-title">💡 TODAY'S LESSON</div>
+<div class="lesson-text" id="lessonText"></div>
+</div>
+<div class="moral-buttons">
+<button class="again" onclick="readAgain()">🔄 Read Again</button>
+<button class="home" onclick="finishStory()">🏠 Home</button>
+</div>
+</div>
+</section>
+
+<script>
+const stories=[
+{title:"The Lion and the Mouse",category:"Animals",emoji:"🦁",duration:"4 min",moral:"Kindness is never wasted. Even the smallest friend can help.",slides:[["🦁","A mighty lion was sleeping peacefully under a tree."],["🐭","A little mouse accidentally ran across the lion."],["😡","The lion caught the mouse, but decided to let him go."],["🪢","One day, the lion was caught in a hunter's net."],["🐭","The little mouse came and quickly chewed the ropes."],["🦁❤️🐭","The lion was free and learned that every friend matters."]]},
+{title:"The Clever Crow",category:"Animals",emoji:"🐦",duration:"3 min",moral:"Where there is a will, there is a way.",slides:[["🐦","A thirsty crow searched everywhere for water."],["🏺","The crow found a pot with a little water inside."],["🤔","But the water was too low for the crow to reach."],["🪨","The clever crow dropped small stones into the pot."],["💧","The water slowly rose to the top."],["🐦💧","The crow drank the water and flew away happily."]]},
+{title:"The Kind Little Girl",category:"Kindness",emoji:"👧",duration:"3 min",moral:"A small act of kindness can make someone's day brighter.",slides:[["👧","Maya was walking home from school."],["👵","She saw an old woman carrying a heavy bag."],["🤲","Maya offered to carry the bag for her."],["😊","The woman smiled and thanked Maya."],["🌈","Maya felt happy because she had helped someone."],["❤️","Kindness made both their hearts happy."]]},
+{title:"The Giving Tree",category:"Kindness",emoji:"🌳",duration:"4 min",moral:"Sharing what we have can bring happiness to others.",slides:[["🌳","A large tree stood beside a small village."],["👦","A little boy often came to rest under its shade."],["🍎","The tree gave him delicious fruits."],["🏠","The boy later used its branches to build a small home."],["🌳","The old tree was happy that it could still help."],["❤️","Giving to others can be a beautiful gift."]]},
+{title:"Two Good Friends",category:"Friendship",emoji:"👫",duration:"3 min",moral:"True friends help each other during difficult times.",slides:[["👫","Arun and Ravi were best friends."],["🌧️","One afternoon, heavy rain began to fall."],["😟","Ravi became worried because he had forgotten his umbrella."],["☂️","Arun shared his umbrella with Ravi."],["😊","They walked home together."],["🤝","Good friends never leave each other behind."]]},
+{title:"The Lost Puppy",category:"Friendship",emoji:"🐶",duration:"3 min",moral:"A caring friend gives comfort when someone is afraid.",slides:[["🐶","A little puppy became lost in a busy park."],["😢","The puppy was frightened and lonely."],["👦","A boy noticed the puppy and stayed beside it."],["🔎","Together they searched for the puppy's owner."],["👨‍👩‍👦","At last, they found the puppy's family."],["❤️🐶","The puppy had found both its family and a new friend."]]},
+{title:"The Honest Woodcutter",category:"Wisdom",emoji:"🪓",duration:"3 min",moral:"Always be honest, even when nobody is watching.",slides:[["🌳","A poor woodcutter worked near a river every day."],["🪓","One day, his axe accidentally fell into the river."],["😢","The woodcutter became sad because he could not afford another axe."],["✨","A magical spirit appeared and showed him a golden axe."],["🙅","The woodcutter honestly said that it was not his axe."],["🏆","Because of his honesty, he was rewarded."]]},
+{title:"The Wise Farmer",category:"Wisdom",emoji:"👨‍🌾",duration:"4 min",moral:"Think carefully before making an important decision.",slides:[["👨‍🌾","A farmer found a strange bag in his field."],["💰","Inside were many gold coins."],["🤔","He did not immediately take the money."],["🏘️","He asked the villagers if anyone had lost it."],["👨","An old merchant came looking for his lost bag."],["🤝","The farmer returned it and earned everyone's respect."]]},
+{title:"The Little Seed",category:"Nature",emoji:"🌱",duration:"3 min",moral:"Great things can grow from small beginnings.",slides:[["🌱","A tiny seed rested quietly beneath the soil."],["🌧️","Rain gave the seed water."],["☀️","Warm sunlight helped it grow."],["🌿","A tiny green plant appeared."],["🌳","Years later, it became a beautiful tree."],["🦋","Birds and butterflies made the tree their home."]]},
+{title:"The Clean River",category:"Nature",emoji:"🏞️",duration:"4 min",moral:"Protecting nature is everyone's responsibility.",slides:[["🏞️","A beautiful river flowed beside a village."],["🗑️","People slowly began throwing rubbish into it."],["😔","The river became dirty and the fish disappeared."],["👧👦","The children decided to clean the river."],["♻️","Everyone started using bins and recycling waste."],["🌊🐟","The river became clean again and the fish returned."]]}
+];
+
+let currentStory=0,currentSlide=0,selectedCategory="All";
+let favorites=JSON.parse(localStorage.getItem("storyFavorites"))||[];
+renderStories(stories);
+
+function renderStories(list){
+const grid=document.getElementById("storyGrid"),empty=document.getElementById("empty");
+grid.innerHTML="";
+document.getElementById("storyCount").textContent=list.length+(list.length===1?" story":" stories");
+if(!list.length){empty.style.display="block";return}
+empty.style.display="none";
+list.forEach(story=>{
+const i=stories.indexOf(story),fav=favorites.includes(i),card=document.createElement("div");
+card.className="story-card";
+card.innerHTML=`<button class="favorite-small" onclick="event.stopPropagation();toggleFavorite(${i})">${fav?"❤️":"♡"}</button><div class="story-image">${story.emoji}</div><div class="story-info"><div class="story-category">${story.category.toUpperCase()}</div><div class="story-title">${story.title}</div><div class="story-meta"><span>⏱ ${story.duration}</span><span>${story.slides.length} scenes</span></div></div>`;
+card.onclick=()=>openStory(i);grid.appendChild(card);
+});
+}
+function filterStories(category,element){
+selectedCategory=category;
+document.querySelectorAll(".category").forEach(x=>x.classList.remove("active"));
+element.classList.add("active");
+const list=category==="All"?stories:stories.filter(s=>s.category.toLowerCase()===category.toLowerCase());
+renderStories(list);
+document.getElementById("storiesSection").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function openStory(i){currentStory=i;currentSlide=0;document.getElementById("storyPlayer").style.display="block";document.body.style.overflow="hidden";updatePlayer()}
+function closeStory(){document.getElementById("storyPlayer").style.display="none";document.body.style.overflow="auto";if("speechSynthesis"in window)speechSynthesis.cancel()}
+function updatePlayer(){
+const s=stories[currentStory],slide=s.slides[currentSlide];
+document.getElementById("playerTitle").textContent=s.title;
+document.getElementById("scene").textContent=slide[0];
+document.getElementById("subtitle").textContent=slide[1];
+const p=document.getElementById("progress");p.innerHTML="";
+s.slides.forEach((_,i)=>{const b=document.createElement("span");if(i<=currentSlide)b.className="active";p.appendChild(b)});
+document.getElementById("prevButton").disabled=currentSlide===0;
+document.getElementById("nextButton").textContent=currentSlide===s.slides.length-1?"Finish ✨":"Next →";
+updateFavoriteButton();
+}
+function nextSlide(){const s=stories[currentStory];if(currentSlide<s.slides.length-1){currentSlide++;updatePlayer()}else showMoral()}
+function previousSlide(){if(currentSlide>0){currentSlide--;updatePlayer()}}
+function speakStory(){
+if(!("speechSynthesis"in window)){alert("Text-to-speech is not supported in this browser.");return}
+speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(stories[currentStory].slides[currentSlide][1]);u.rate=.85;u.pitch=1.15;speechSynthesis.speak(u)
+}
+function toggleFavorite(i){
+favorites=favorites.includes(i)?favorites.filter(x=>x!==i):[...favorites,i];
+localStorage.setItem("storyFavorites",JSON.stringify(favorites));
+renderStories(selectedCategory==="All"?stories:stories.filter(s=>s.category.toLowerCase()===selectedCategory.toLowerCase()));
+updateFavoriteButton();
+}
+function toggleCurrentFavorite(){toggleFavorite(currentStory)}
+function updateFavoriteButton(){const b=document.getElementById("playerFav");b.textContent=favorites.includes(currentStory)?"♥":"♡";b.style.color=favorites.includes(currentStory)?"#ff5b73":""}
+function showFavorites(){
+const list=stories.filter((_,i)=>favorites.includes(i));
+if(!list.length){alert("You haven't added any favourite stories yet! ❤️");return}
+renderStories(list);document.querySelectorAll(".category").forEach(x=>x.classList.remove("active"));document.getElementById("storiesSection").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function showMoral(){
+const s=stories[currentStory];document.getElementById("completedStory").textContent=s.title;document.getElementById("lessonText").textContent=s.moral;document.getElementById("moralScreen").style.display="flex";if("speechSynthesis"in window)speechSynthesis.cancel()
+}
+function readAgain(){document.getElementById("moralScreen").style.display="none";currentSlide=0;updatePlayer()}
+function finishStory(){document.getElementById("moralScreen").style.display="none";closeStory();window.scrollTo({top:0,behavior:"smooth"})}
+function toggleDarkMode(){document.body.classList.toggle("dark");localStorage.setItem("storyDarkMode",document.body.classList.contains("dark"))}
+if(localStorage.getItem("storyDarkMode")==="true")document.body.classList.add("dark");
+function scrollToStories(){document.getElementById("storiesSection").scrollIntoView({behavior:"smooth",block:"start"})}
+function goTop(){window.scrollTo({top:0,behavior:"smooth"})}
+</script>
+</body>
+</html>
